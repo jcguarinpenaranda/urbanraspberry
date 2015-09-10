@@ -39,9 +39,13 @@ El formato propuesto para recibir es:
 {
 	"variable":"temperatura",
 	"pines":["a0","a1"],
-	"frecuencia":60 //en segundos
+	"frecuencia":60
 }
 ```
+NOTA: La frecuencia se mide en segundos. Es la
+frecuencia con la cual se deben enviar los datos
+sensados a la Raspberry.
+
 ##Licencia
 
 The MIT License (MIT)
@@ -55,6 +59,9 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ##Créditos
-Nicolás Escobar Cruz
-Juan David Orejuela
-Juan Camilo Guarín P - @jcguarinp
+
+Desarrollado por:
+
+*Nicolás Escobar Cruz
+*Juan David Orejuela
+*Juan Camilo Guarín P - @jcguarinp
