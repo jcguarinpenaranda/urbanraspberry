@@ -11,23 +11,23 @@ Cali, Colombia, 2015.
 
 ##Rutas Webservice
 
-###<ip_rasp>/urbanraspberry/datosensor
+###/IP_RASPBERRY/urbanraspberry/datosensor
 Un cliente que haga una petición POST podrá enviar datos
 directamente a la plataforma de UrbanEyes
 
 El formato que debe enviar el cliente
 será:
 
-´´´
+```json
 {
 	"value":123,
 	"variable":"temperatura"
 }
-´´´
+```
 
-###/<ip_rasp>/urbanraspberry/variables
+###/IP_RASPBERRY/urbanraspberry/variables
 En /variables un cliente que haga
-un get obtendrá los datos de los pines
+un GET obtendrá los datos de los pines
 en los cuales tendrá conectado uno
 o varios sensores, y el nombre de
 la variable que corresponde a cada
@@ -35,13 +35,13 @@ uno.
 
 El formato propuesto para recibir es:
 
-´´´
+```json
 {
 	"variable":"temperatura",
 	"pines":["a0","a1"],
 	"frecuencia":60 //en segundos
 }
-´´´
+```
 ##Licencia
 
 The MIT License (MIT)
