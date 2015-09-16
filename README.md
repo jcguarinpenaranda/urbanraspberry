@@ -62,6 +62,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Desarrollado por:
 
-*Nicolás Escobar Cruz
-*Juan David Orejuela
-*Juan Camilo Guarín P - @jcguarinp
+* Nicolás Escobar Cruz
+* Juan David Orejuela
+* Juan Camilo Guarín P - @jcguarinp

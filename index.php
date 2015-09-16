@@ -22,8 +22,7 @@ El formato propuesto para recibir es:
 }
 
 */
-$app->get('/variables',function(){
-
+$app->get('/variables/',function(){
 
 
 });
@@ -44,7 +43,7 @@ será:
 }
 
 */
-$app->post('/datosensor',function() use($app){
+$app->post('/datosensor/',function() use($app){
 	//$a = $app->request->params();
 
 });
