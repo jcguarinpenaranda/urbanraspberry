@@ -1,6 +1,9 @@
 <?php
 
+
+require "vendor/autoload.php";
 require 'Slim/Slim.php';
+
 \Slim\Slim::registerAutoloader();
 
 $app = new \Slim\Slim();
@@ -23,8 +26,8 @@ El formato propuesto para recibir es:
 
 */
 $app->get('/variables/',function(){
-
-
+	$texto = file_get_contents("variables.json");
+	echo $texto;
 });
 
 
@@ -39,13 +42,30 @@ será:
 
 {
 	"value":123,
-	"variable":"temperatura"
+	"variable_id":"temperatura"
 }
 
 */
 $app->post('/datosensor/',function() use($app){
-	//$a = $app->request->params();
+	$a = $app->request->params();
+	$geoip = file_get_contents("http://telize.com/geoip");
+	//var_dump($geoip);
+	$jsonip = json_decode($geoip,true);
 
+	//var_dump($a); // Crea el valor para realizar el post.
+    //echo $a["value"]; // Busca el valor referenciado por la clave.
+    $a ["longitude"] = $jsonip ["longitude"];
+    $a ["latitude"]=   $jsonip ["latitude"];
+    $a ["date"]= date('d-m-y_H:i:s');
+    $a ["description"]= "urbanraspberry";
+
+//    $req = \Httpful\Request::post('http://181.118.150.147/sensor/create/', json_encode($a), "application/json");
+
+    $headers= array("Accept" => "application/x-www-form-urlencoded");
+
+	$response = Unirest\Request::post("http://181.118.150.147/sensor/create/", $headers, $a);
+
+    var_dump($response->body);
 });
 
 
