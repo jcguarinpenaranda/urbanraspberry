@@ -42,8 +42,8 @@ será:
 
 {
 	"value":123,
-	"variable_id":"temperatura"
-}
+	"variable_id":3
+00}
 
 */
 $app->post('/datosensor/',function() use($app){

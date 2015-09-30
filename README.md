@@ -21,9 +21,32 @@ será:
 ```json
 {
 	"value":123,
-	"variable":"temperatura"
+	"variable_id":3
 }
 ```
+
+Ó utilizando los parámetros:
+
+```
+value=123&variable_id=3
+```
+
+Nótese que se hace referencia a un id de una variable. Este id de variable puede ser cualquiera de los siguientes:
+
+| id | nombre               |
+|----|----------------------|
+| 1  | robo                 |
+| 2  | vial                 |
+| 3  | radiacion_solar      |
+| 4  | temperatura          |
+| 5  | humedad              |
+| 6  | NO2                  |
+| 7  | CO2                  |
+| 8  | nivel_de_sonido      |
+| 9  | presion_atmosferica  |
+| 10 | velocidad_del_viento |
+| 11 | direccion_del_viento |
+| 12 | homicidio            |
 
 ###/IP_RASPBERRY/urbanraspberry/variables
 En /variables un cliente que haga
@@ -42,6 +65,7 @@ El formato propuesto para recibir es:
 	"frecuencia":60
 }
 ```
+
 NOTA: La frecuencia se mide en segundos. Es la
 frecuencia con la cual se deben enviar los datos
 sensados a la Raspberry.
