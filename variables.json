@@ -1,0 +1,5 @@
+{
+	"variable":"temperatura",
+	"pines":["a0","a1"],
+	"frecuencia":60
+}
