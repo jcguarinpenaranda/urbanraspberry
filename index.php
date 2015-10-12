@@ -31,6 +31,62 @@ $app->get('/equipos/',function(){
 	echo $texto;
 });
 
+/*
+En /equipos, un cliente que haga delete
+podrá borrar un equipo dado por un id
+*/
+$app->delete('/equipos/:id',function($id){
+
+	try{
+
+	$texto = file_get_contents("equipos.json");
+
+	$equipos = json_decode($texto, true);
+
+	$existe = false;
+	$pos;
+
+	for($i =0 ; $i<count($equipos); $i++){
+		//var_dump($equipos[$i]['id']);
+		//echo "Igual: ".$params['id']." ".$equipos[$i]['id'];
+			if($equipos[$i]['id'] === $id){
+				//echo $equipos[$i]['id'];
+				$existe = true;
+				$pos = $i;
+			}
+	}
+
+	if($existe){
+
+		$status = array();
+		$status['status']= 200;
+		$status['description'] = "Equipo eliminado.";
+
+		//unset($equipos[$pos]);
+		array_splice($equipos, $pos, 1);
+
+		//var_dump($equipos);
+
+		file_put_contents("equipos.json", json_encode($equipos));
+
+
+		echo json_encode($status);
+
+	}else{
+
+		$status['status']= 404;
+		$status['description'] = "Equipo no existe.";
+
+		echo json_encode($status);
+
+	}
+
+}catch(Exception $e){
+	var_dump($e);
+}
+
+});
+
 
 /*
 En /equipos, un cliente que haga POST
@@ -46,7 +102,7 @@ $app->post('/equipos/',function(){
 	$texto = file_get_contents("equipos.json");
 	//var_dump($texto);
 
-	$equipos = json_decode($texto, true);	
+	$equipos = json_decode($texto, true);
 	//var_dump($equipos);
 
 	$existe = false;
@@ -73,7 +129,7 @@ $app->post('/equipos/',function(){
 	}else{
 
 		$equipos[]=array("id"=>$params['id'], "nombre"=>$params['nombre'], "variables"=> array(), "frecuencia"=>null);
-		
+
 		//var_dump($equipos);
 
 
@@ -84,14 +140,14 @@ $app->post('/equipos/',function(){
 			"status"=>201,
 			"description" => "Equipo Creado");
 
-		echo json_encode($status);		
+		echo json_encode($status);
 	}
 
 });
 
 
 /*
-En /variables, un cliente que haga un 
+En /variables, un cliente que haga un
 get, obtendrá la lista de variables
 disponibles para hacer reportes en el
 sistema de UrbanEyes.
@@ -130,7 +186,7 @@ $app->post('/datosensor/',function() use($app){
     $a ["description"]= "urbanraspberry";
 
     //$req = \Httpful\Request::post('http://181.118.150.147/sensor/create/', json_encode($a), "application/json");
-    
+
 
     $headers= array("Accept" => "application/x-www-form-urlencoded");
 

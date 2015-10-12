@@ -20,8 +20,8 @@ será:
 
 ```json
 {
-	"value":123,
-	"variable_id":3
+	"variable_id":3,
+	"value":123
 }
 ```
 
@@ -48,22 +48,25 @@ Nótese que se hace referencia a un id de una variable. Este id de variable pued
 | 11 | direccion_del_viento |
 | 12 | homicidio            |
 
-###/IP_RASPBERRY/urbanraspberry/variables
-En /variables un cliente que haga
-un GET obtendrá los datos de los pines
-en los cuales tendrá conectado uno
-o varios sensores, y el nombre de
-la variable que corresponde a cada
-uno.
+###/IP_RASPBERRY/urbanraspberry/equipos
 
-El formato propuesto para recibir es:
+#### GET
+
+Obtener toda la lista de equipos conectados a la
+Raspberry.
+
+El formato de recepción es el siguiente:
 
 ```json
-{
-	"variable":"temperatura",
-	"pines":["a0","a1"],
+[{"id":"ca",
+	"nombre":"Juan",
+	"variables":
+	[{
+		"nombre":"temperatura",
+		"pines":["a0","a1"]
+	}],
 	"frecuencia":60
-}
+}]
 ```
 
 NOTA: La frecuencia se mide en segundos. Es la
