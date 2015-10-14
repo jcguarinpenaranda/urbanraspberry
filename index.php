@@ -5,6 +5,19 @@ require "vendor/autoload.php";
 
 $app = new \Slim\App;
 
+
+/*--------------------------------------VARIABLES-------------------------*/
+
+$app->get('/variables/',function($req,$res,$args){
+
+	$cont = file_get_contents('http://181.118.150.147/sensor/list');
+
+	echo $cont;
+	
+});
+
+/*------------------------------------- EQUIPOS --------------------------*/
+
 /*
 En /equipos un cliente que haga
 un get obtendrá los datos de los pines
@@ -59,10 +72,6 @@ $app->delete('/equipos/{id}',function($req, $res, $args){
 
 	if($existe){
 
-		$status = array();
-		$status['status']= 200;
-		$status['description'] = "Equipo eliminado.";
-
 		//unset($equipos[$pos]);
 		array_splice($equipos, $pos, 1);
 
@@ -70,6 +79,9 @@ $app->delete('/equipos/{id}',function($req, $res, $args){
 
 		file_put_contents("equipos.json", json_encode($equipos));
 
+		$status = array();
+		$status['status']= 200;
+		$status['description'] = "Equipo eliminado.";
 
 		echo json_encode($status);
 
@@ -81,7 +93,6 @@ $app->delete('/equipos/{id}',function($req, $res, $args){
 		echo json_encode($status);
 
 	}
-
 
 });
 
