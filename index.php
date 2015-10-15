@@ -26,148 +26,209 @@ $app->get('/variables/',function($req,$res,$args){
 
 /*------------------------------------- EQUIPOS --------------------------*/
 
-/*
-En /equipos un cliente que haga
-un get obtendrá los datos de los pines
-en los cuales tendrá conectado uno
-o varios sensores, y el nombre de
-la variable que corresponde a cada
-uno.
-
-El formato propuesto para recibir es:
-
-{
-	"id":"abc",
-	"nombre":"Equipo prueba",
-	"variable":"temperatura",
-	"pines":["a0","a1"],
-	"frecuencia":60 //en segundos
-}
-*/
-$app->get('/equipos/',function($req,$res,$args){
-	$texto = file_get_contents("equipos.json");
-	$json = json_decode($texto,true);
-
-	for($i=0;$i<count($json);$i++){
-		for($j=0;$j<count($json[$i]['variables']);$j++){
-			$json[$j]['variables'][$j]['pinesTexto'] = implode(",",$json[$i]['variables'][$j]['pines']);
-		}
-	}
-
-	echo json_encode($json);
-
-	return $res->withHeader(
-		"Content-Type",
-		"application/json");
-});
-
-/*
-En /equipos, un cliente que haga delete
-podrá borrar un equipo dado por un id
-*/
-$app->delete('/equipos/{id}',function($req, $res, $args){
-
-	$id = $args["id"];
-
-	$texto = file_get_contents("equipos.json");
-
-	$equipos = json_decode($texto, true);
-
-	$existe = false;
-	$pos;
-
-	for($i =0 ; $i<count($equipos); $i++){
-		//var_dump($equipos[$i]['id']);
-		//echo "Igual: ".$params['id']." ".$equipos[$i]['id'];
-			if($equipos[$i]['id'] === $id){
-				//echo $equipos[$i]['id'];
-				$existe = true;
-				$pos = $i;
-			}
-	}
-
-	if($existe){
-
-		//unset($equipos[$pos]);
-		array_splice($equipos, $pos, 1);
-
-		//var_dump($equipos);
-
-		file_put_contents("equipos.json", json_encode($equipos));
-
-		$status = array();
-		$status['status']= 200;
-		$status['description'] = "Equipo eliminado.";
-
-		echo json_encode($status);
-
-	}else{
-
-		$status['status']= 404;
-		$status['description'] = "Equipo no existe.";
-
-		echo json_encode($status);
-
-	}
-
-});
+//En /equipos un cliente que haga
+//un get obtendrá los datos de los pines
+//en los cuales tendrá conectado uno
+//o varios sensores, y el nombre de
+//la variable que corresponde a cada
+//uno.
+//
+//El formato propuesto para recibir es:
+//
+//{
+//	"id":"abc",
+//	"nombre":"Equipo prueba",
+//	"variable":"temperatura",
+//	"pines":["a0","a1"],
+//	"frecuencia":60 //en segundos
+//}
 
 
-/*
-En /equipos, un cliente que haga POST
-podrá añadir un nuevo equipo
-*/
-$app->post('/equipos/',function($req, $res, $args){
+$app->group('/equipos', function () {
 
-	$body = $req->getParsedBody();
+	$this->get('/',function($req,$res,$args){
+		$texto = file_get_contents("equipos.json");
+		$json = json_decode($texto,true);
 
-	$params = $body;
-
-	//var_dump($params);
-
-	$texto = file_get_contents("equipos.json");
-	//var_dump($texto);
-
-	$equipos = json_decode($texto, true);
-	//var_dump($equipos);
-
-	$existe = false;
-
-	for($i =0 ; $i<count($equipos); $i++){
-		//var_dump($equipos[$i]['id']);
-		//echo "Igual: ".$params['id']." ".$equipos[$i]['id'];
-		if(isset($equipos[$i]['id']) && isset($params['id'])){
-			if($equipos[$i]['id'] === $params['id']){
-				//echo $equipos[$i]['id'];
-				$existe = true;
+		for($i=0;$i<count($json);$i++){
+			for($j=0;$j<count($json[$i]['variables']);$j++){
+				$json[$j]['variables'][$j]['pinesTexto'] = implode(",",$json[$i]['variables'][$j]['pines']);
 			}
 		}
-	}
 
-	if($existe == true){
+		echo json_encode($json);
 
-		$status = array();
-		$status['status']= 304;
-		$status['description'] = "El equipo ya existe";
+		return $res->withHeader(
+			"Content-Type",
+			"application/json");
+	});
 
-		echo json_encode($status);
 
-	}else{
 
-		$equipos[]=array("id"=>$params['id'], "nombre"=>$params['nombre'], "variables"=> array(), "frecuencia"=>null);
+	//En /equipos, un cliente que haga POST
+	//podrá añadir un nuevo equipo
 
-		//Se escribe en el archivo el contenido del arreglo con la adición.
-		file_put_contents("equipos.json", json_encode($equipos));
+	$this->post('/',function($req, $res, $args){
 
-		$status = array(
-			"status"=>201,
-			"description" => "Equipo Creado");
+		$body = $req->getParsedBody();
 
-		echo json_encode($status);
-	}
+		$params = $body;
+
+		$texto = file_get_contents("equipos.json");
+
+		$equipos = json_decode($texto, true);
+
+		$existe = false;
+		for($i =0 ; $i<count($equipos); $i++){
+			//var_dump($equipos[$i]['id']);
+			//echo "Igual: ".$params['id']." ".$equipos[$i]['id'];
+			if(isset($equipos[$i]['id']) && isset($params['id'])){
+				if($equipos[$i]['id'] === $params['id']){
+					//echo $equipos[$i]['id'];
+					$existe = true;
+				}
+			}
+		}
+
+		if($existe == true){
+
+			$status = array();
+			$status['status']= 304;
+			$status['description'] = "El equipo ya existe";
+
+			echo json_encode($status);
+
+		}else{
+
+			$equipos[]=array("id"=>$params['id'], "nombre"=>$params['nombre'], "variables"=> array(), "frecuencia"=>null);
+
+			//Se escribe en el archivo el contenido del arreglo con la adición.
+			file_put_contents("equipos.json", json_encode($equipos));
+
+			$status = array(
+				"status"=>201,
+				"description" => "Equipo Creado");
+
+			echo json_encode($status);
+		}
+
+	});
+
+
+	$this->group('/{id}',function(){
+
+		$this->get('/',function($req,$res,$args){
+			echo "hola";
+		});
+
+	})->add(function($req,$res,$next){
+		//var_dump($next);
+		$path = $_SERVER['REDIRECT_URL'];
+		$paths = explode('/',$path);
+		$id = $paths[count($paths)-1];
+
+		$existe = false;
+		$pos;
+
+		$texto = file_get_contents("equipos.json");
+		$equipos = json_decode($texto, true);
+
+		for($i =0 ; $i<count($equipos); $i++){
+				if($equipos[$i]['id'] === $id){
+					$existe = true;
+					$pos = $i;
+				}
+		}
+
+		if($existe){
+			$res=$next($req,$res);
+
+		}else{
+			$status['status']= 404;
+			$status['description'] = "Equipo no existe.";
+
+			echo json_encode($status);
+
+		}
+
+		return $res;
+	});
+/*
+
+	//En /equipos, un cliente que haga delete
+	//podrá borrar un equipo dado por un id
+	$this->delete('/{id}', function($req, $res, $args){
+
+		$id = $args["id"];
+
+		$texto = file_get_contents("equipos.json");
+
+		$equipos = json_decode($texto, true);
+
+		$existe = false;
+		$pos;
+
+		for($i =0 ; $i<count($equipos); $i++){
+			//var_dump($equipos[$i]['id']);
+			//echo "Igual: ".$params['id']." ".$equipos[$i]['id'];
+				if($equipos[$i]['id'] === $id){
+					//echo $equipos[$i]['id'];
+					$existe = true;
+					$pos = $i;
+				}
+		}
+
+		if($existe){
+			array_splice($equipos, $pos, 1);
+
+			file_put_contents("equipos.json", json_encode($equipos));
+
+			$status = array();
+			$status['status']= 200;
+			$status['description'] = "Equipo eliminado.";
+
+			echo json_encode($status);
+
+		}else{
+
+			$status['status']= 404;
+			$status['description'] = "Equipo no existe.";
+
+			echo json_encode($status);
+
+		}
+
+	});
+
+	$this->get("/{id}", function($req,$res,$args){
+		$texto = file_get_contents("equipos.json");
+		$equipos = json_decode($texto,true);
+
+		$equipo = array();
+
+		for($i=0; $i<count($equipos);$i++){
+			if($equipos['id']==$args['id']){
+				$equipo = $equipo['id'];
+			}
+		}
+
+		echo json_encode($equipo);
+	});
+
+	//Función que permite añadir una variable al equipo
+	//con id {id}
+	$this->post('/{id}/variables', function($req,$res,$args){
+		$body = $req->getParsedBody();
+
+
+
+	});
+
+	$this->put('/{id}',function($req,$res,$args){
+
+	});*/
 
 });
-
 
 
 /*-----------------------------DATOS SENSORES ----------------------------*/
