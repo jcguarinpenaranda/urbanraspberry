@@ -1,1 +1,1 @@
-[{"id":"arduinocasa","nombre":"Arduino Casa","variables":[],"frecuencia":null},{"id":"casa","nombre":"casa","variables":[],"frecuencia":null}]
+[{"id":"arduinocasa","nombre":"Arduino Casa","variables":[{"nombre":"temperatura","pines":["a0","a1"]}],"frecuencia":null},{"id":"casa","nombre":"casa","variables":[],"frecuencia":null}]

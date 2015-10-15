@@ -12,8 +12,16 @@ $app->get('/variables/',function($req,$res,$args){
 
 	$cont = file_get_contents('http://181.118.150.147/sensor/list');
 
-	echo $cont;
-	
+	$variables = json_decode($cont,true);
+	$variablesActivas = array();
+
+	for($i=0; $i<count($variables);$i++){
+		if($variables[$i]['enable']==true){
+			$variablesActivas[]=$variables[$i];
+		}
+	}
+
+	echo json_encode($variablesActivas);
 });
 
 /*------------------------------------- EQUIPOS --------------------------*/
@@ -38,7 +46,15 @@ El formato propuesto para recibir es:
 */
 $app->get('/equipos/',function($req,$res,$args){
 	$texto = file_get_contents("equipos.json");
-	echo $texto;
+	$json = json_decode($texto,true);
+
+	for($i=0;$i<count($json);$i++){
+		for($j=0;$j<count($json[$i]['variables']);$j++){
+			$json[$j]['variables'][$j]['pinesTexto'] = implode(",",$json[$i]['variables'][$j]['pines']);
+		}
+	}
+
+	echo json_encode($json);
 
 	return $res->withHeader(
 		"Content-Type",
