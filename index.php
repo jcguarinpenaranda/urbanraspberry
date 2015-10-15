@@ -117,15 +117,66 @@ $app->group('/equipos', function () {
 
 	$this->group('/{id}',function(){
 
-		$this->get('/',function($req,$res,$args){
-			echo "hola";
+		function getEquipos(){
+			$texto = file_get_contents("equipos.json");
+			$equipos = json_decode($texto,true);
+			return $equipos;
+		}
+
+		$this->map(['GET','DELETE'],'/',function($req,$res,$args){
+			$texto = file_get_contents("equipos.json");
+			$equipos = json_decode($texto,true);
+			$body = $req->getParsedBody();
+			$method = $req->getMethod();
+
+			$pos = $req->getHeaderLine("posicion");
+			if($method == "GET"){
+
+				echo json_encode($equipos[$pos]);
+
+			}elseif($method == "DELETE"){
+
+				array_splice($equipos, $pos, 1);
+
+				file_put_contents("equipos.json", json_encode($equipos));
+
+				$status = array();
+				$status['status']= 200;
+				$status['description'] = "Equipo eliminado.";
+
+				echo json_encode($status);
+			}
+
+
+		});
+
+		$this->group('/variables',function(){
+
+			$this->get('/',function($req,$res,$args){
+				$pos = $req->getHeaderLine("posicion");
+
+			});
+
+			//Se añaden nuevas variables
+			$this->post('/',function($req,$res,$args){
+				$equipos = getEquipos();
+				$body = $req->getParsedBody();
+				
+			});
+
+			//Se modifican o borran las variables con id varid
+			$this->map(['PUT','DELETE'],'/{varid}',function($req,$res,$args){
+				$equipos = getEquipos();
+
+			});
+
 		});
 
 	})->add(function($req,$res,$next){
-		//var_dump($next);
 		$path = $_SERVER['REDIRECT_URL'];
 		$paths = explode('/',$path);
-		$id = $paths[count($paths)-1];
+		//var_dump($paths);
+		$id = $paths[3];
 
 		$existe = false;
 		$pos;
@@ -140,7 +191,9 @@ $app->group('/equipos', function () {
 				}
 		}
 
+
 		if($existe){
+			$req = $req->withAddedHeader("posicion",$pos);
 			$res=$next($req,$res);
 
 		}else{
@@ -148,7 +201,6 @@ $app->group('/equipos', function () {
 			$status['description'] = "Equipo no existe.";
 
 			echo json_encode($status);
-
 		}
 
 		return $res;
