@@ -50,11 +50,11 @@ $app->group('/equipos', function () {
 		$texto = file_get_contents("equipos.json");
 		$json = json_decode($texto,true);
 
-		for($i=0;$i<count($json);$i++){
+		/*for($i=0;$i<count($json);$i++){
 			for($j=0;$j<count($json[$i]['variables']);$j++){
 				$json[$j]['variables'][$j]['pinesTexto'] = implode(",",$json[$i]['variables'][$j]['pines']);
 			}
-		}
+		}*/
 
 		echo json_encode($json);
 
@@ -161,7 +161,41 @@ $app->group('/equipos', function () {
 			$this->post('/',function($req,$res,$args){
 				$equipos = getEquipos();
 				$body = $req->getParsedBody();
-				
+				$pos = $req->getHeaderLine("posicion");
+
+				if(!isset($body['nombre']) || !isset($body['pinesTexto'])){
+					$res= $res->withStatus(400,"Se necesitan las variables nombre y pinesTexto");
+
+				}else{
+
+					$pines;
+					try{
+						$pines = explode(',',$body['pinesTexto']);
+					}catch(Exception $e){
+						$pines = $body['pinesTexto'];
+					}
+
+					$var = array(
+						"id"=>md5(date()),
+						"nombre"=>$body['nombre'],
+						"pines"=>$pines,
+						"pinesTexto"=>$body['pinesTexto']
+					);
+
+					$equipos[$pos]['variables'][]=$var;
+
+					file_put_contents("equipos.json", json_encode($equipos));
+
+					$status = array();
+					$status['status']= 201;
+					$status['description'] = "Variable creada.";
+
+					$res = $res->withStatus(201);
+
+					echo json_encode($status);
+				}
+
+				return $res;
 			});
 
 			//Se modifican o borran las variables con id varid
