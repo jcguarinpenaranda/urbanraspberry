@@ -47,7 +47,7 @@ $app->get('/variables/',function($req,$res,$args){
 $app->group('/equipos', function () {
 
 	$this->get('/',function($req,$res,$args){
-		$texto = file_get_contents("equipos.json");
+		$texto = file_get_contents("devices.json");
 		$json = json_decode($texto,true);
 
 		/*for($i=0;$i<count($json);$i++){
@@ -74,7 +74,7 @@ $app->group('/equipos', function () {
 
 		$params = $body;
 
-		$texto = file_get_contents("equipos.json");
+		$texto = file_get_contents("devices.json");
 
 		$equipos = json_decode($texto, true);
 
@@ -103,7 +103,7 @@ $app->group('/equipos', function () {
 			$equipos[]=array("id"=>$params['id'], "nombre"=>$params['nombre'], "variables"=> array(), "frecuencia"=>null);
 
 			//Se escribe en el archivo el contenido del arreglo con la adición.
-			file_put_contents("equipos.json", json_encode($equipos));
+			file_put_contents("devices.json", json_encode($equipos));
 
 			$status = array(
 				"status"=>201,
@@ -118,13 +118,13 @@ $app->group('/equipos', function () {
 	$this->group('/{id}',function(){
 
 		function getEquipos(){
-			$texto = file_get_contents("equipos.json");
+			$texto = file_get_contents("devices.json");
 			$equipos = json_decode($texto,true);
 			return $equipos;
 		}
 
 		$this->map(['GET','DELETE'],'/',function($req,$res,$args){
-			$texto = file_get_contents("equipos.json");
+			$texto = file_get_contents("devices.json");
 			$equipos = json_decode($texto,true);
 			$body = $req->getParsedBody();
 			$method = $req->getMethod();
@@ -138,7 +138,7 @@ $app->group('/equipos', function () {
 
 				array_splice($equipos, $pos, 1);
 
-				file_put_contents("equipos.json", json_encode($equipos));
+				file_put_contents("devices.json", json_encode($equipos));
 
 				$status = array();
 				$status['status']= 200;
@@ -184,7 +184,7 @@ $app->group('/equipos', function () {
 
 					$equipos[$pos]['variables'][]=$var;
 
-					file_put_contents("equipos.json", json_encode($equipos));
+					file_put_contents("devices.json", json_encode($equipos));
 
 					$status = array();
 					$status['status']= 201;
@@ -215,7 +215,7 @@ $app->group('/equipos', function () {
 		$existe = false;
 		$pos;
 
-		$texto = file_get_contents("equipos.json");
+		$texto = file_get_contents("devices.json");
 		$equipos = json_decode($texto, true);
 
 		for($i =0 ; $i<count($equipos); $i++){
@@ -247,7 +247,7 @@ $app->group('/equipos', function () {
 
 		$id = $args["id"];
 
-		$texto = file_get_contents("equipos.json");
+		$texto = file_get_contents("devices.json");
 
 		$equipos = json_decode($texto, true);
 
@@ -267,7 +267,7 @@ $app->group('/equipos', function () {
 		if($existe){
 			array_splice($equipos, $pos, 1);
 
-			file_put_contents("equipos.json", json_encode($equipos));
+			file_put_contents("devices.json", json_encode($equipos));
 
 			$status = array();
 			$status['status']= 200;
@@ -287,7 +287,7 @@ $app->group('/equipos', function () {
 	});
 
 	$this->get("/{id}", function($req,$res,$args){
-		$texto = file_get_contents("equipos.json");
+		$texto = file_get_contents("devices.json");
 		$equipos = json_decode($texto,true);
 
 		$equipo = array();
