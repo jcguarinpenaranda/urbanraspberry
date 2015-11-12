@@ -71,7 +71,18 @@ El formato de recepción es el siguiente:
 
 NOTA: La frecuencia se mide en segundos. Es la
 frecuencia con la cual se deben enviar los datos
-sensados a la Raspberry.
+sensados a la Raspberry. Esto, de momento, no se
+encuentra implementado.
+
+
+##Versiones
+###v1.0.0
+* Primer release.
+* Se pueden agregar, leer y borrar equipos a la lista de equipos
+* Se pueden agregar y leer variables de la lista de variables de cada equipo
+* Se pueden leer las variabes remotas de UrbanEyes
+* Se pueden reportar datos enviados por medio de sensores a UrbanEyes y saber si la recepción ha sido correcta o no.
+
 
 ##Licencia
 
@@ -91,4 +102,4 @@ Desarrollado por:
 
 * Nicolás Escobar Cruz
 * Juan David Orejuela
-* Juan Camilo Guarín P - @jcguarinp
+* Juan Camilo Guarín P - twitter: @jcguarinp

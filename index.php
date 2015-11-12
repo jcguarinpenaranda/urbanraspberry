@@ -8,6 +8,10 @@ $app = new \Slim\App;
 
 /*--------------------------------------VARIABLES-------------------------*/
 
+//Un cliente que haga una petición a variables
+//podrá obtener toda la lista de variables que se sensan
+//en UrbanEyes.
+
 $app->get('/variables/',function($req,$res,$args){
 
 	$cont = file_get_contents('http://181.118.150.147/sensor/list');
@@ -16,6 +20,8 @@ $app->get('/variables/',function($req,$res,$args){
 	$variablesActivas = array();
 
 	for($i=0; $i<count($variables);$i++){
+		//Solo se muestran las variables que están
+		//prendidas, de momento
 		if($variables[$i]['enable']==true){
 			$variablesActivas[]=$variables[$i];
 		}
@@ -26,7 +32,7 @@ $app->get('/variables/',function($req,$res,$args){
 
 /*------------------------------------- EQUIPOS --------------------------*/
 
-//En /equipos un cliente que haga
+//En /equipos/ un cliente que haga
 //un get obtendrá los datos de los pines
 //en los cuales tendrá conectado uno
 //o varios sensores, y el nombre de
@@ -42,19 +48,11 @@ $app->get('/variables/',function($req,$res,$args){
 //	"pines":["a0","a1"],
 //	"frecuencia":60 //en segundos
 //}
-
-
 $app->group('/equipos', function () {
 
 	$this->get('/',function($req,$res,$args){
 		$texto = file_get_contents("devices.json");
 		$json = json_decode($texto,true);
-
-		/*for($i=0;$i<count($json);$i++){
-			for($j=0;$j<count($json[$i]['variables']);$j++){
-				$json[$j]['variables'][$j]['pinesTexto'] = implode(",",$json[$i]['variables'][$j]['pines']);
-			}
-		}*/
 
 		echo json_encode($json);
 
@@ -65,33 +63,40 @@ $app->group('/equipos', function () {
 
 
 
-	//En /equipos, un cliente que haga POST
+	//En /equipos/, un cliente que haga POST
 	//podrá añadir un nuevo equipo
-
 	$this->post('/',function($req, $res, $args){
 
+		//Se coge el cuerpo de la petición
+		//como un arreglo de PHP
 		$body = $req->getParsedBody();
 
 		$params = $body;
 
+		//se carga el archivo de equipos
 		$texto = file_get_contents("devices.json");
 
+		//se interpreta dicho archivo como un arreglo
+		//de PHP
 		$equipos = json_decode($texto, true);
 
+		//Se mira si el id del equipo enviado en los
+		//existe para saber si se actualiza el registro
+		//o se crea uno nuevo
 		$existe = false;
 		for($i =0 ; $i<count($equipos); $i++){
-			//var_dump($equipos[$i]['id']);
-			//echo "Igual: ".$params['id']." ".$equipos[$i]['id'];
+
 			if(isset($equipos[$i]['id']) && isset($params['id'])){
 				if($equipos[$i]['id'] === $params['id']){
-					//echo $equipos[$i]['id'];
 					$existe = true;
 				}
 			}
+
 		}
 
 		if($existe == true){
 
+			//Se dice que el equipo ya existe
 			$status = array();
 			$status['status']= 304;
 			$status['description'] = "El equipo ya existe";
@@ -99,6 +104,7 @@ $app->group('/equipos', function () {
 			echo json_encode($status);
 
 		}else{
+			//Se crea el equipo
 
 			$equipos[]=array("id"=>$params['id'], "nombre"=>$params['nombre'], "variables"=> array(), "frecuencia"=>null);
 
@@ -114,7 +120,7 @@ $app->group('/equipos', function () {
 
 	});
 
-
+	//Ruta: /equipos/{id}
 	$this->group('/{id}',function(){
 
 		function getEquipos(){
@@ -131,11 +137,11 @@ $app->group('/equipos', function () {
 
 			$pos = $req->getHeaderLine("posicion");
 			if($method == "GET"){
-
+				//se devuelve el equipo con el id enviado
 				echo json_encode($equipos[$pos]);
 
 			}elseif($method == "DELETE"){
-
+				//Si es una petición DELETE se borra el equipo correspondiente
 				array_splice($equipos, $pos, 1);
 
 				file_put_contents("devices.json", json_encode($equipos));
@@ -199,6 +205,7 @@ $app->group('/equipos', function () {
 			});
 
 			//Se modifican o borran las variables con id varid
+			//Por implementar...
 			$this->map(['PUT','DELETE'],'/{varid}',function($req,$res,$args){
 				$equipos = getEquipos();
 
@@ -207,17 +214,27 @@ $app->group('/equipos', function () {
 		});
 
 	})->add(function($req,$res,$next){
+
+		//Se lee el path en el que estamos
+		//p.ej /equipos/{id}
+
 		$path = $_SERVER['REDIRECT_URL'];
 		$paths = explode('/',$path);
-		//var_dump($paths);
+
+		//Se lee el 4 parametro (id)
 		$id = $paths[3];
 
 		$existe = false;
 		$pos;
 
+		//Se leen los diferentes equipos
+		//qu ya están registrados para mirar
+		//si dicho equipo ya existe
 		$texto = file_get_contents("devices.json");
 		$equipos = json_decode($texto, true);
 
+		//se mira si algún equipo coincide con el
+		//id obtenido en la ruta
 		for($i =0 ; $i<count($equipos); $i++){
 				if($equipos[$i]['id'] === $id){
 					$existe = true;
@@ -227,10 +244,16 @@ $app->group('/equipos', function () {
 
 
 		if($existe){
+			//si existe entonces se añade un header
+			//para que sea leido en las funciones definidas
+			//arriba
 			$req = $req->withAddedHeader("posicion",$pos);
 			$res=$next($req,$res);
 
 		}else{
+			//Si no está definido el id entonces
+			//no tiene caso que ejecutemos las
+			//funciones que están adentro
 			$status['status']= 404;
 			$status['description'] = "Equipo no existe.";
 
@@ -239,80 +262,6 @@ $app->group('/equipos', function () {
 
 		return $res;
 	});
-/*
-
-	//En /equipos, un cliente que haga delete
-	//podrá borrar un equipo dado por un id
-	$this->delete('/{id}', function($req, $res, $args){
-
-		$id = $args["id"];
-
-		$texto = file_get_contents("devices.json");
-
-		$equipos = json_decode($texto, true);
-
-		$existe = false;
-		$pos;
-
-		for($i =0 ; $i<count($equipos); $i++){
-			//var_dump($equipos[$i]['id']);
-			//echo "Igual: ".$params['id']." ".$equipos[$i]['id'];
-				if($equipos[$i]['id'] === $id){
-					//echo $equipos[$i]['id'];
-					$existe = true;
-					$pos = $i;
-				}
-		}
-
-		if($existe){
-			array_splice($equipos, $pos, 1);
-
-			file_put_contents("devices.json", json_encode($equipos));
-
-			$status = array();
-			$status['status']= 200;
-			$status['description'] = "Equipo eliminado.";
-
-			echo json_encode($status);
-
-		}else{
-
-			$status['status']= 404;
-			$status['description'] = "Equipo no existe.";
-
-			echo json_encode($status);
-
-		}
-
-	});
-
-	$this->get("/{id}", function($req,$res,$args){
-		$texto = file_get_contents("devices.json");
-		$equipos = json_decode($texto,true);
-
-		$equipo = array();
-
-		for($i=0; $i<count($equipos);$i++){
-			if($equipos['id']==$args['id']){
-				$equipo = $equipo['id'];
-			}
-		}
-
-		echo json_encode($equipo);
-	});
-
-	//Función que permite añadir una variable al equipo
-	//con id {id}
-	$this->post('/{id}/variables', function($req,$res,$args){
-		$body = $req->getParsedBody();
-
-
-
-	});
-
-	$this->put('/{id}',function($req,$res,$args){
-
-	});*/
 
 });
 
@@ -354,6 +303,9 @@ $app->post('/datosensor/',function($req,$res,$args){
 	$ar ["date"]= date('d-m-y_H:i:s');
 	$ar ["description"]= "urbanraspberry";
 
+	//Se envía la información a UrbanEyes!
+	//De momento, no se pudo encontrar una
+	//manera en que esto funcionara por POST
 	$response = file_get_contents("http://181.118.150.147/sensor/create?latitude=".$jsonip["latitude"]."&longitude=".$jsonip["longitude"]."&date=".date('d-m-y_H:i:s')."&description=urbanraspberry&value=".$ar["value"]."&variable_id=".$ar["variable_id"]);
 
 	if(is_string($response)){
