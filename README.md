@@ -6,7 +6,9 @@ de paso de información proveniente de una variedad de sensores hacia
 la plataforma de IoT UrbanEyes, de la Universidad Autónoma de Occidente.
 
 Debe tenerse en cuenta que se trabaja sobre la siguiente arquitectura:
+
 ![Muestra de la arquitectura del proyecto](/img/arquitectura.png?raw=true)
+
 Figura 1. Arquitectura del proyecto para enviar datos a UrbanEyes
 
 El presente repositorio corresponde al código que iría en donde en la Figura 1 se
